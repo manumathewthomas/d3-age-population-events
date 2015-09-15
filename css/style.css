@@ -1,0 +1,55 @@
+/*
+ * Author : Manu Mathew Thomas
+ * E-Mail : mthoma52@uic.edu
+ * Website: mthoma52.com
+ */
+
+@font-face{
+  font-family:"roboto-regular";
+  src: url("../assets/fonts/roboto/RobotoCondensed-Regular.ttf");
+  font-family:"raleway-regular";
+  src: url("../assets/fonts/raleway/Raleway-Regular.ttf");
+}
+
+html{
+  height:100%;
+}
+
+body{
+  margin:0;
+  height:100%;
+  background-color:#ffffff;
+}
+
+h1{
+  margin:0;
+}
+
+header{
+  width:100%;
+  font-family:"raleway-regular";
+  text-align:center;
+  background-color:#089de3;
+  color:#ffffff;
+  border-bottom:2px solid #e6e6dc;
+}
+
+header h1{
+  font-size:60px;
+}
+header h2{
+  font-size:45px;
+}
+
+header nav a{
+  padding:0px 25px 5px 0px;
+  word-wrap:inline;
+  display:inline-block;
+  text-decoration:none;
+  font-size:25px;
+  color:#ffffff;
+}
+
+header nav a:hover{
+  color:#ffa500;
+}
