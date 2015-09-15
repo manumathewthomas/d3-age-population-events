@@ -18,7 +18,7 @@ html{
 body{
   margin:0;
   height:100%;
-  background-color:#ffffff;
+  background-color:#252830;
 }
 
 h1{
@@ -27,7 +27,6 @@ h1{
 
 header{
   width:100%;
-  font-family:"raleway-regular";
   text-align:center;
   background-color:#089de3;
   color:#ffffff;
@@ -52,4 +51,8 @@ header nav a{
 
 header nav a:hover{
   color:#ffa500;
+}
+
+header nav a:active{
+  color:#ffa9a5;
 }
