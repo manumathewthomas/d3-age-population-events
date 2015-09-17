@@ -6,14 +6,11 @@
 
 
 // Global Variables
+
 var barMargin = {top:20,right:20,bottom:30,left:80};
 var barChartWidth = 800 - barMargin.left-barMargin.right;
 var barChartHeight = 600 - barMargin.top-barMargin.bottom;
-var barChart1Width = barChartWidth/3;
-var barChart2Width = barChart1Width + barChartWidth/3;
-var barChart3Width = barChart2Width + barChartWidth/3;
 var selectedCountryList;
-
 
 
 
@@ -60,28 +57,57 @@ var barSection = d3.select("body")
                    .append("section")
                    .attr("class","bar_chart_collection");
 
-var barCharts = barSection.append("div")
+var barChart1 = barSection.append("div")
                           .attr("id","bar_chart1")
                           .attr("class","bar_chart");
 
+var barChart1Title = barChart1.append("h1")
+                              .style("text-align","center")
+                              .text("Bar Chart 1");
 
-var svgBarContainer = barCharts.append("svg")
-                                .attr("id","bar_charts_svg")
+var barChart2 = barSection.append("div")
+                          .attr("id","bar_chart2")
+                          .attr("class","bar_chart");
+
+var barChart2Title = barChart2.append("h1")
+                              .style("text-align","center")
+                              .text("Bar Chart 2");
+
+var barChart3 = barSection.append("div")
+                          .attr("id","bar_chart3")
+                          .attr("class","bar_chart");
+
+var barChart3Title = barChart3.append("h1")
+                              .style("text-align","center")
+                              .text("Bar Chart 3");
+
+var svgBarContainer1 = barChart1.append("svg")
+                                .attr("id","bar_chart_svg1")
+                                .attr("class","bar_charts_svg")
                                 .attr("width","100%")
                                 .attr("height","100%")
                                 .attr("viewBox","0 0 "+(barChartWidth+barMargin.left+barMargin.right)
                                                       +" "+(barChartHeight+barMargin.top+barMargin.bottom))
                                 .attr("preserveAspectRatio","xMinYMid");
 
-var barChartGroup1 = svgBarContainer.append("g")
-                                    .attr("id","barChartGroup1");
 
-var barChartGroup2 = svgBarContainer.append("g")
-                                    .attr("id","barChartGroup2");
+var svgBarContainer2 = barChart2.append("svg")
+                                .attr("id","bar_chart_svg2")
+                                .attr("class","bar_charts_svg")
+                                .attr("width","100%")
+                                .attr("height","100%")
+                                .attr("viewBox","0 0 "+(barChartWidth+barMargin.left+barMargin.right)
+                                                     +" "+(barChartHeight+barMargin.top+barMargin.bottom))
+                                .attr("preserveAspectRatio","xMinYMid");
 
-var barChartGroup3 = svgBarContainer.append("g")
-                                    .attr("id","barChartGroup3");
-
+var svgBarContainer3 = barChart3.append("svg")
+                                .attr("id","bar_chart_svg3")
+                                .attr("class","bar_charts_svg")
+                                .attr("width","100%")
+                                .attr("height","100%")
+                                .attr("viewBox","0 0 "+(barChartWidth+barMargin.left+barMargin.right)
+                                                      +" "+(barChartHeight+barMargin.top+barMargin.bottom))
+                                .attr("preserveAspectRatio","xMinYMid");
 
 // Resizing Bar Charts
 var barChartToBeResized = $(".bar_chart_svg");
@@ -223,31 +249,31 @@ yAxis = d3.svg.axis()
           .scale(yScale)
           .orient("left").ticks(10);
 
-/*svgBarContainer.append("g")
+svgBarContainer1.append("g")
                 .attr("class","axis x_axis")
-                .attr("transform","translate(0,"+barChart1Width+")")
+                .attr("transform","translate(0,"+barChartWidth+")")
                 .call(xAxis);
 
-svgBarContainer.append("g")
+svgBarContainer1.append("g")
                 .attr("class","axis y_axis")
                 .attr("transform","translate(20,0)")
                 .call(yAxis);
-*/
 
-barChartGroup1.selectAll("rect")
-              .data(country1Dataset)
-              .enter()
-              .append("rect")
-              .attr({
+
+svgBarContainer1.selectAll("rect")
+                .data(country1Dataset)
+                .enter()
+                .append("rect")
+                .attr({
                   x:function(d,i){
-                    return i * (barChart1Width/country1Dataset.length);
+                    return i * (barChartWidth/country1Dataset.length);
                     },
 
                   y:function(d){
                      return barChartHeight-heightScale(d.Population2012);
                   },
 
-                  width:barChart1Width/country1Dataset.length -1,
+                  width:barChartWidth/country1Dataset.length -1,
                   
                   height: function(d){
                     return heightScale(d.Population2012);
@@ -258,59 +284,59 @@ barChartGroup1.selectAll("rect")
                   }
                   });
 
-/*
-svgBarContainer.append("g")
+
+svgBarContainer2.append("g")
                 .attr("class","axis y_axis")
                 .attr("transform","translate(20,0)")
-              .call(yAxis);
-*/
+                .call(yAxis);
 
-barChartGroup2.selectAll("rect")
+
+svgBarContainer2.selectAll("rect")
                 .data(country1Dataset)
                 .enter()
                 .append("rect")
                 .attr({
                   x:function(d,i){
-                    return i * (barChart1Width/country1Dataset.length)+barChart1Width;
+                    return i * (barChartWidth/country1Dataset.length);
                     },
 
                   y:function(d){
                      return barChartHeight-heightScale(d.Population2012);
                   },
 
-                  width:barChart1Width/country1Dataset.length -1,
+                  width:barChartWidth/country1Dataset.length -1,
                   
                   height: function(d){
                     return heightScale(d.Population2012);
                   },
 
                   fill:function(d){
-                    return "red";
+                    return "teal";
                   }
                   });
 
 
-/*
-svgBarContainer.append("g")
+
+svgBarContainer3.append("g")
                 .attr("class","axis y_axis")
                 .attr("transform","translate(20,0)")
                 .call(yAxis);
-*/
 
-barChartGroup3.selectAll("rect")
+
+svgBarContainer3.selectAll("rect")
                 .data(country1Dataset)
                 .enter()
                 .append("rect")
                 .attr({
                   x:function(d,i){
-                    return i * (barChart1Width/country1Dataset.length) + barChart1Width*2;
+                    return i * (barChartWidth/country1Dataset.length);
                     },
 
                   y:function(d){
                      return barChartHeight-heightScale(d.Population2012);
                   },
 
-                  width:barChart1Width/country1Dataset.length -1,
+                  width:barChartWidth/country1Dataset.length -1,
                   
                   height: function(d){
                     return heightScale(d.Population2012);

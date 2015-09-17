@@ -19,6 +19,7 @@ body{
   margin:0;
   height:100%;
   background-color:#252830;
+  color:#ffffff;
 }
 
 h1{
@@ -56,3 +57,18 @@ header nav a:hover{
 header nav a:active{
   color:#ffa9a5;
 }
+
+p#datasource{
+  margin:10px;
+  padding:10px;
+  text-align:center;
+  font-size:20px;
+}
+
+section.bar_chart{
+  display:inline-block;
+  margin:10px;
+  padding:5px;
+}
+
+
