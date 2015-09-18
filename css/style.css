@@ -59,16 +59,44 @@ header nav a:active{
 }
 
 p#datasource{
-  margin:10px;
-  padding:10px;
+  margin-bottom:2px;
+  padding:2px;
   text-align:center;
   font-size:20px;
 }
 
-section.bar_chart{
-  display:inline-block;
-  margin:10px;
-  padding:5px;
+svg g text{
+font-size:10px;
 }
 
+svg text{
+font-size:30px;
+}
 
+.ui.fluid.dropdown.stateDropdown{
+width:25%;
+display:inline-block;
+}
+
+.ui.fluid.dropdown.eventDropdown{
+width:25%;
+display:inline;
+float:right;
+}
+
+.default.dropdown:hover>.text,
+.ui.default.dropdown>.text, 
+.ui.dropdown:hover>.default.text, 
+.ui.dropdown>.default.text{
+  color:black;
+}
+
+@media screen and (max-width: 800px) {
+  .ui.fluid.dropdown.stateDropdown{
+    width:100%;
+  }
+
+  .ui.fluid.dropdown.eventDropdown{
+    width:100%;
+  }
+}
