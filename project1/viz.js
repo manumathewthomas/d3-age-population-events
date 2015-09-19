@@ -9,6 +9,7 @@ var countryList=[];
 var currentCountry;
 var USDataset=[];
 var USDataset2012=[];
+var pieChartData=[];
 
 var lookup ={};
 var xScale,yScale,heightScale,xAxis,yAxis;
@@ -102,10 +103,11 @@ currentCountry = $("#countryList :selected").val();
  for(var item,i=0;item = tempDataset[i++];){
   var name = item.NAME;
 
-if(item.NAME == currentCountry && item.SEX=="0" && item.AGE!=999)
-  USDataset.push({"State":item.NAME,"Age":+item.AGE,"Sex":item.SEX,
+  if(item.NAME == currentCountry && item.SEX=="0" && item.AGE > 60 && item.AGE<80)
+  { USDataset.push({"State":item.NAME,"Age":+item.AGE,"Sex":item.SEX,
                     "Population2012":+item.POPEST2012_CIV});
-
+  pieChartData.push(+item.POPEST2012_CIV);
+  }
 }
 
 
@@ -176,6 +178,52 @@ svgBarContainer.selectAll("rect")
                  }
               });
 
+//pie-chart
+var dataset = [5,10,20,45,6,25];
+
+pie = d3.layout.pie()
+               .value(function(d){return d.Population2012});
+
+
+var w = 300;
+var h = 300;
+
+var outerRadius = w/2;
+var innerRadius = 0;
+ arc = d3.svg.arc()
+                .innerRadius(innerRadius)
+                .outerRadius(outerRadius);
+
+var svgPie = d3.select("body")
+               .append("svg")
+               .attr("width",w)
+               .attr("height",h)
+               .append("svg:g")
+               .attr("transform","translate("+outerRadius+","+outerRadius+")")
+
+var color = d3.scale.category20();
+
+ arcs = svgPie.datum(USDataset)
+              .selectAll("path")
+              .data(pie)
+              .enter();
+
+
+  path= arcs.append("path")
+            .attr("fill",function(d,i){return color(i);})
+            .attr("d",arc)
+            .each(function(d){return this._current =d.Population2012;});
+
+  arcs.append("text")
+     .attr("transform",function(d){
+       return "translate("+arc.centroid(d)+")";
+     })
+    .attr("text-anchor","middle")
+    .text(function(d,i){
+      return USDataset[i].Age;
+    });
+                             
+
 
 
 /*$("#countryList").click(function(){
@@ -204,14 +252,20 @@ bootstrap.select("#countryList")
 
 currentCountry = $("#countryList :selected").val();
 USDataset=[];
+pieChartData=[];
 for(var item,i=0;item = tempDataset[i++];){
   var name = item.NAME;
 
-if(item.NAME == currentCountry&&item.SEX==0&&item.AGE!=999)
+  if(item.NAME == currentCountry&&item.SEX==0&&item.AGE>60&&item.AGE<80)
+  {
   USDataset.push({"State":item.NAME,"Age":+item.AGE,"Sex":item.SEX,
                     "Population2012":+item.POPEST2012_CIV});
 
+  pieChartData.push(+item.POPEST2012_CIV);
+  }
 }
+
+
 
 
 
@@ -282,8 +336,26 @@ heightScale.domain([0,d3.max(USDataset,function(d){
              .duration(500)
              .remove();
 
+//            pie.value(function(d){return d;});
+  //          path = path.data(pie);;
+    //        path.attr("d",arc);
+
+path = svgPie.datum(USDataset)
+              .selectAll("path")
+              .data(pie)
+              .attr("d",arc);
+              //.transition().duration(750).attrTween("d",arcTween);
+ 
         });
 
+}
+
+function arcTween(a) {
+  var i = d3.interpolate(this._current,a);
+  this._current = i(0);
+  return function(t){
+    return arc(i(t));
+  };
 }
 
                
