@@ -22,7 +22,7 @@ var chart1AgeDiv=[0,0,0,0,0,0,0,0,0];
 var chart2AgeDiv=[0,0,0,0,0,0,0,0,0];
 var chart3AgeDiv=[0,0,0,0,0,0,0,0,0];
 var noOfPeopleWhoRemembersChart1=0,noOfPeopleWhoRemembersChart2=0,noOfPeopleWhoRemembersChart3=0;
-var selectedCountryList=["California","Illinois","Utah"];
+var selectedCountryList=["California","China","China"];
 var currentEvent;
 var regionalDataset;
 var stateList=[];
@@ -39,6 +39,7 @@ var filePath="../assets/dataset/";
 
 var barOrPie = true;
 var overviewOrDetail = true;
+var allOrRemember = true;
 
 // Header Elements
 var header = d3.select("body")
@@ -91,19 +92,19 @@ var svgBarTitleContainer = barCharts.append("svg")
                                     .attr("preserveAspectRatio","xMinYMid");
                                  
 var barChartTitle1 = svgBarTitleContainer.append("text")
-                                   .attr("x","10%")
+                                   .attr("x","13%")
                                    .attr("y","50px")
                                    .attr("fill","white")
                                    .text(selectedCountryList[0]);
 
 var barChartTitle2 = svgBarTitleContainer.append("text")
-                                         .attr("x","45%")
+                                         .attr("x","46%")
                                          .attr("y","50px")
                                          .attr("fill","white")
                                          .text(selectedCountryList[1]);
 
 var barChartTitle3 = svgBarTitleContainer.append("text")
-                                         .attr("x","80%")
+                                         .attr("x","79%")
                                          .attr("y","50px")
                                          .attr("fill","white")
                                          .text(selectedCountryList[2]);
@@ -114,7 +115,7 @@ var svgBarContainer = barCharts.append("svg")
                                 .attr("id","bar_charts_svg")
                                 .attr("width","100%")
                                 .attr("height","100%")
-                                .attr("viewBox","0 0 "+(barChartWidth+barMargin.left+barMargin.right)
+                                .attr("viewBox","0 0 "+(barChartWidth+barMargin.left+barMargin.right+200)
                                                       +" "+(barChartHeight+barMargin.top+barMargin.bottom)/3)
                                 .attr("preserveAspectRatio","xMinYMid");
                                   
@@ -148,15 +149,27 @@ var overviewBarChartGroup3 = svgBarContainer.append("g")
                                             
 var pieChartGroup1 = svgBarContainer.append("g")
                                     .attr("id","pieChartGroup1")
-                                    .attr("transform","translate("+barChart1Width/2+","+barChartHeight/5+")");
+                                    .attr("transform","translate("+(barChart1Width/2+40)+","+barChartHeight/5+")");
 
 var pieChartGroup2 = svgBarContainer.append("g")
                                     .attr("id","pieChartGroup2")
-                                    .attr("transform","translate("+(barChart1Width/2+barChart1Width)+","+barChartHeight/5+")");
+                                    .attr("transform","translate("+(barChart1Width/2+barChart1Width+100)+","+barChartHeight/5+")");
 
 var pieChartGroup3 = svgBarContainer.append("g")
                                     .attr("id","pieChartGroup3")
-                                    .attr("transform","translate("+(barChart1Width/2+barChart1Width*2)+","+barChartHeight/5+")");
+                                    .attr("transform","translate("+(barChart1Width/2+barChart1Width*2+170)+","+barChartHeight/5+")");
+
+var overviewPieChartGroup1 = svgBarContainer.append("g")
+                                    .attr("id","overviewPieChartGroup1")
+                                    .attr("transform","translate("+(barChart1Width/2+40)+","+barChartHeight/5+")");
+
+var overviewPieChartGroup2 = svgBarContainer.append("g")
+                                    .attr("id","overviewPieChartGroup2")
+                                    .attr("transform","translate("+(barChart1Width/2+barChart1Width+100)+","+barChartHeight/5+")");
+
+var overviewPieChartGroup3 = svgBarContainer.append("g")
+                                    .attr("id","overviewPieChartGroup3")
+                                    .attr("transform","translate("+(barChart1Width/2+barChart1Width*2+170)+","+barChartHeight/5+")");
 
 
 
@@ -167,13 +180,33 @@ var pieChartGroup3 = svgBarContainer.append("g")
       d3.select("#barChartGroup1").attr("visibility",barVisibility);
       d3.select("#barChartGroup2").attr("visibility",barVisibility);
       d3.select("#barChartGroup3").attr("visibility",barVisibility);
-   }
+ 
+      d3.select("#xAxis1").attr("visibility",barVisibility);
+      d3.select("#yAxis1").attr("visibility",barVisibility);
+      
+      d3.select("#xAxis2").attr("visibility",barVisibility);
+      d3.select("#yAxis2").attr("visibility",barVisibility);
+
+      d3.select("#xAxis3").attr("visibility",barVisibility);
+      d3.select("#yAxis3").attr("visibility",barVisibility);
+
+
+ }
    else
    {
       d3.select("#overviewBarChartGroup1").attr("visibility",barVisibility);
       d3.select("#overviewBarChartGroup2").attr("visibility",barVisibility);
       d3.select("#overviewBarChartGroup3").attr("visibility",barVisibility);
   
+      d3.select("#xAxisOverview1").attr("visibility",barVisibility);
+      d3.select("#yAxisOverview1").attr("visibility",barVisibility);
+      
+      d3.select("#xAxisOverview2").attr("visibility",barVisibility);
+      d3.select("#yAxisOverview2").attr("visibility",barVisibility);
+
+      d3.select("#xAxisOverview3").attr("visibility",barVisibility);
+      d3.select("#yAxisOverview3").attr("visibility",barVisibility);
+
    }
 
       d3.select("#pieChartGroup1").attr("visibility",pieVisibility);
@@ -192,6 +225,24 @@ var overviewDetailToggle = function(detailVisibility,overviewVisibility){
       d3.select("#overviewBarChartGroup1").attr("visibility",overviewVisibility);
       d3.select("#overviewBarChartGroup2").attr("visibility",overviewVisibility);
       d3.select("#overviewBarChartGroup3").attr("visibility",overviewVisibility);
+ 
+      d3.select("#xAxis1").attr("visibility",detailVisibility);
+      d3.select("#yAxis1").attr("visibility",detailVisibility);
+      
+      d3.select("#xAxis2").attr("visibility",detailVisibility);
+      d3.select("#yAxis2").attr("visibility",detailVisibility);
+
+      d3.select("#xAxis3").attr("visibility",detailVisibility);
+      d3.select("#yAxis3").attr("visibility",detailVisibility);
+
+      d3.select("#xAxisOverview1").attr("visibility",overviewVisibility);
+      d3.select("#yAxisOverview1").attr("visibility",overviewVisibility);
+      
+      d3.select("#xAxisOverview2").attr("visibility",overviewVisibility);
+      d3.select("#yAxisOverview2").attr("visibility",overviewVisibility);
+
+      d3.select("#xAxisOverview3").attr("visibility",overviewVisibility);
+      d3.select("#yAxisOverview3").attr("visibility",overviewVisibility);
   }    
 }
 
@@ -320,7 +371,8 @@ var genderButton = controlButtons.append("div")
                                  .attr("class","ui large buttons");
 
 genderButton.append("button")
-          .attr("class","ui button")
+          .attr("class","ui button positive")
+          .attr("id","allButton")
           .text("All");
 
 genderButton.append("div")
@@ -328,6 +380,7 @@ genderButton.append("div")
 
 genderButton.append("button")
           .attr("class","ui button")
+          .attr("id","rememberButton")
           .text("Who Remembers");
 
 
@@ -354,7 +407,7 @@ showRegionalData = function(){
     }
   }
 
-fullList = stateList.concat(countryList).sort();
+fullList = stateList.sort();
   dropdown_menu.selectAll("div")
                .data(fullList)
                .enter()
@@ -452,6 +505,37 @@ fullList = stateList.concat(countryList).sort();
           overviewDetailToggle("visible","hidden");
   });
 
+  $('#allButton').on("click",function(){
+          d3.select('#allButton').attr("class","ui button positive");
+          d3.select('#rememberButton').attr("class","ui button");
+
+          allOrRemember = true;
+
+          chartDataset1=[];
+          chartDataset2=[];
+          chartDataset3=[];
+          insertDataToBarCharts(currentEvent);
+          updateBarChart1();
+          updateBarChart2();
+          updateBarChart3();
+
+  });
+
+  $('#rememberButton').on("click",function(){
+          d3.select('#rememberButton').attr("class","ui button positive");
+          d3.select('#allButton').attr("class","ui button");
+          
+          allOrRemember = false;
+
+          chartDataset1=[];
+          chartDataset2=[];
+          chartDataset3=[];
+          insertDataToBarCharts(currentEvent);
+          updateBarChart1();
+          updateBarChart2();
+          updateBarChart3();
+  });
+
 drawBarCharts();
  
 }
@@ -471,7 +555,7 @@ scaleBarChart1();
                 .append("rect")
                 .attr({
                     x:function(d,i){
-                      return i * (barChart1Width/chartDataset1.length);
+                      return (i * (barChart1Width/chartDataset1.length))+barMargin.left+barMargin.right+21;
                       },
 
                     y:function(d){
@@ -495,7 +579,7 @@ scaleBarChart1();
                         .append("rect")
                         .attr({
                           x:function(d,i){
-                           return i * (barChart1Width/chart1AgeDiv.length);
+                           return (i * (barChart1Width/chart1AgeDiv.length))+barMargin.left+barMargin.right+21;
                         },
 
                          y:function(d){
@@ -514,6 +598,31 @@ scaleBarChart1();
                     });
 
 
+svgBarContainer.append("g")
+               .attr("class","axis x_axis")
+               .attr("id","xAxis1")
+               .attr("transform","translate("+(barMargin.left+barMargin.right+25)+","+(barChartHeight/3)+")")
+              .call(xAxis1);
+              
+svgBarContainer.append("g")
+               .attr("class","axis y_axis")
+               .attr("id","yAxis1")
+               .attr("transform","translate("+(barMargin.left+barMargin.right+25)+",0)")
+               .call(yAxis1);
+
+svgBarContainer.append("g")
+               .attr("class","axis x_axis")
+               .attr("id","xAxisOverview1")
+               .attr("transform","translate("+(barMargin.left+barMargin.right+25)+","+(barChartHeight/3)+")")
+              .call(xAxisOverview1);
+              
+svgBarContainer.append("g")
+               .attr("class","axis y_axis")
+               .attr("id","yAxisOverview1")
+               .attr("transform","translate("+(barMargin.left+barMargin.right+25)+",0)")
+               .call(yAxisOverview1);
+
+
 
 /*
 svgBarContainer.append("g")
@@ -529,7 +638,7 @@ barChartGroup2.selectAll("rect")
                 .append("rect")
                 .attr({
                   x:function(d,i){
-                    return i * (barChart1Width/chartDataset2.length)+barChart1Width;
+                    return i * (barChart1Width/chartDataset2.length)+barChart1Width+barMargin.left+barMargin.right+91;
                     },
 
                   y:function(d){
@@ -553,7 +662,7 @@ overviewBarChartGroup2.selectAll("rect")
                       .append("rect")
                       .attr({
                         x:function(d,i){
-                          return i * (barChart1Width/chart2AgeDiv.length)+barChart1Width;
+                          return i * (barChart1Width/chart2AgeDiv.length)+barChart1Width+barMargin.left+barMargin.right+91;
                       },
 
                         y:function(d){
@@ -572,6 +681,30 @@ overviewBarChartGroup2.selectAll("rect")
                     });
 
 
+svgBarContainer.append("g")
+               .attr("class","axis x_axis")
+               .attr("id","xAxis2")
+               .attr("transform","translate("+(barMargin.left+barMargin.right+barChart1Width+100)+","+(barChartHeight/3)+")")
+              .call(xAxis2);
+              
+svgBarContainer.append("g")
+               .attr("class","axis y_axis")
+               .attr("id","yAxis2")
+               .attr("transform","translate("+(barMargin.left+barMargin.right+barChart1Width+100)+",0)")
+               .call(yAxis2);
+
+svgBarContainer.append("g")
+               .attr("class","axis x_axis")
+               .attr("id","xAxisOverview2")
+               .attr("transform","translate("+(barMargin.left+barMargin.right+barChart1Width+100)+","+(barChartHeight/3)+")")
+              .call(xAxisOverview2);
+              
+svgBarContainer.append("g")
+               .attr("class","axis y_axis")
+               .attr("id","yAxisOverview2")
+               .attr("transform","translate("+(barMargin.left+barMargin.right+barChart1Width+100)+",0)")
+               .call(yAxisOverview2);
+
 
 /*
 svgBarContainer.append("g")
@@ -587,7 +720,7 @@ barChartGroup3.selectAll("rect")
                 .append("rect")
                 .attr({
                   x:function(d,i){
-                    return i * (barChart1Width/chartDataset3.length) + barChart1Width*2;
+                    return i * (barChart1Width/chartDataset3.length) + barChart1Width*2 + 181;
                     },
 
                   y:function(d){
@@ -611,7 +744,7 @@ overviewBarChartGroup3.selectAll("rect")
                       .append("rect")
                       .attr({
                         x:function(d,i){
-                          return i * (barChart1Width/chart3AgeDiv.length) + barChart1Width*2;
+                          return i * (barChart1Width/chart3AgeDiv.length) + barChart1Width*2 +181;
                       },
 
                         y:function(d){
@@ -630,10 +763,37 @@ overviewBarChartGroup3.selectAll("rect")
                       }
                      });
 
+svgBarContainer.append("g")
+               .attr("class","axis x_axis")
+               .attr("id","xAxis3")
+               .attr("transform","translate("+(barMargin.left+barMargin.right+barChart2Width+170)+","+(barChartHeight/3)+")")
+              .call(xAxis3);
+              
+svgBarContainer.append("g")
+               .attr("class","axis y_axis")
+               .attr("id","yAxis3")
+               .attr("transform","translate("+(barMargin.left+barMargin.right+barChart2Width+170)+",0)")
+               .call(yAxis3);
+
+svgBarContainer.append("g")
+               .attr("class","axis x_axis")
+               .attr("id","xAxisOverview3")
+               .attr("transform","translate("+(barMargin.left+barMargin.right+barChart2Width+170)+","+(barChartHeight/3)+")")
+              .call(xAxisOverview3);
+              
+svgBarContainer.append("g")
+               .attr("class","axis y_axis")
+               .attr("id","yAxisOverview3")
+               .attr("transform","translate("+(barMargin.left+barMargin.right+barChart2Width+170)+",0)")
+               .call(yAxisOverview3);
+
 
 
           pie = d3.layout.pie()
                          .value(function(d){return d.Population});
+          
+          pieOverview = d3.layout.pie()
+                                 .value(function(d){return d});
 
           var outerRadius1 = barChart1Width/3 - barMargin.bottom;
           var innerRadius1 = 0;
@@ -652,19 +812,42 @@ overviewBarChartGroup3.selectAll("rect")
                                   .enter();
 
          piePath1 = pieArcs1.append("path")
-                    .attr("fill",function(d,i){return pieColor(i);})
+                    .attr("fill",function(d,i){
+                      return pieColor(i);})
                     .attr("d",arc)
                     .each(function(d){return this._current=d.Population2012;});
 
          pieArcs1.append("text")
              .attr("transform",function(d){
-                return "translate("+arc.centroid(d)+")";
+             
              })
+            .attr("fill","white")
              .attr("text-anchor","middle")
              .text(function(d,i){
                 return chartDataset1[i].Age;
              });
        
+        pieArcsOverview1 = overviewPieChartGroup1.datum(chart1AgeDiv)
+                                  .selectAll("path")
+                                  .data(pieOverview)
+                                  .enter();
+
+         piePathOverview1 = pieArcsOverview1.append("path")
+                    .attr("fill",function(d,i){
+                      return pieColor(i);})
+                    .attr("d",arc);
+
+         pieArcsOverview1.append("text")
+             .attr("transform",function(d){
+             
+             })
+            .attr("fill","white")
+             .attr("text-anchor","middle")
+             .text(function(d,i){
+                return chart1AgeDiv[i].Age;
+             });
+       
+
          pieChartGroup2.append("g")
                          .attr("transform","translate("+(barChartWidth/2+barChart1Width)+","+barChartWidth/2+")");
 
@@ -762,15 +945,13 @@ yAxis1 = d3.svg.axis()
               .scale(yScale1)
               .orient("left").ticks(10);
 
-svgBarContainer.append("g")
-               .attr("class","axis x_axis")
-               .attr("transform","translate("+barMargin.left+","+(barChartHeight/3)+")");
-              // .call(xAxis1);
-              
-svgBarContainer.append("g")
-               .attr("class","axis y_axis")
-               .attr("transform","translate("+(barMargin.left+barMargin.right)+",0)");
-              // .call(yAxis1);
+xAxisOverview1 = d3.svg.axis()
+                       .scale(xScaleOverview1)
+                       .orient("bottom").ticks(10);
+
+yAxisOverview1 = d3.svg.axis()
+              .scale(yScaleOverview1)
+              .orient("left").ticks(10);
 
 }
 
@@ -810,6 +991,7 @@ heightScaleOverview2 = d3.scale.linear()
                         })])
                         .range([0,barChartHeight/3]);
 
+
 xAxis2 = d3.svg.axis()
               .scale(xScale2)
               .orient("bottom").ticks(10);
@@ -818,16 +1000,14 @@ yAxis2 = d3.svg.axis()
               .scale(yScale2)
               .orient("left").ticks(10);
 
-/*svgBarContainer.append("g")
-               .attr("class","axis x_axis")
-               .attr("transform","translate(300,0)")
-               .call(xAxis2);
-              
-svgBarContainer.append("g")
-               .attr("class","axis y_axis")
-               .attr("transform","translate(50,0)")
-               .call(yAxis2);
-*/
+xAxisOverview2 = d3.svg.axis()
+              .scale(xScaleOverview2)
+              .orient("bottom").ticks(10);
+
+yAxisOverview2 = d3.svg.axis()
+              .scale(yScaleOverview2)
+              .orient("left").ticks(10);
+
 }
 
 
@@ -837,7 +1017,7 @@ xScale3 = d3.scale.linear()
                     if(d.Age!=999)
                       return d.Age;
                  })])
-                  .range([0,barChartWidth]);
+                  .range([0,barChartWidth/3]);
 yScale3 = d3.scale.linear()
                  .domain([0,d3.max(chartDataset3,function(d){
                       return d.Population;
@@ -869,7 +1049,6 @@ heightScaleOverview3 = d3.scale.linear()
 
 
 
-
 xAxis3 = d3.svg.axis()
               .scale(xScale3)
               .orient("bottom").ticks(10);
@@ -877,17 +1056,13 @@ xAxis3 = d3.svg.axis()
 yAxis3 = d3.svg.axis()
               .scale(yScale3)
               .orient("left").ticks(10);
+xAxisOverview3 = d3.svg.axis()
+              .scale(xScaleOverview3)
+              .orient("bottom").ticks(10);
 
-/*svgBarContainer.append("g")
-               .attr("class","axis x_axis")
-               .attr("transform","translate("+barMargin.left+",0)")
-               .call(xAxis3);
-              
-svgBarContainer.append("g")
-               .attr("class","axis y_axis")
-               .attr("transform","translate(50,0)")
-               .call(yAxis3);
-*/
+yAxisOverview3 = d3.svg.axis()
+              .scale(yScaleOverview3)
+              .orient("left").ticks(10);
 
 }
 
@@ -1032,6 +1207,29 @@ var updateBarChart1 = function(){
   
 scaleBarChart1();
 
+
+svgBarContainer.select("#xAxis1")
+               .transition()
+               .duration(1000)
+               .call(xAxis1);
+              
+svgBarContainer.select("#yAxis1")
+               .transition()
+               .duration(1000)
+               .call(yAxis1);
+
+svgBarContainer.select("#xAxisOverview1")
+               .transition()
+               .duration(1000)
+               .call(xAxisOverview1);
+              
+svgBarContainer.select("#yAxisOverview1")
+               .transition()
+               .duration(1000)
+               .call(yAxisOverview1);
+
+
+
 barChartGroup1.selectAll("rect")
               .data(chartDataset1)
               .transition()
@@ -1042,7 +1240,7 @@ barChartGroup1.selectAll("rect")
               .ease("cubic-in-out")
               .attr({
                   x:function(d,i){
-                    return i * (barChart1Width/chartDataset1.length);
+                    return i * (barChart1Width/chartDataset1.length)+barMargin.left+barMargin.right+21;
                     },
 
                   y:function(d){
@@ -1053,6 +1251,11 @@ barChartGroup1.selectAll("rect")
                   
                   height: function(d){
                     return heightScale1(d.Population);
+                  },
+
+                  opacity:function(d){
+                    if(d.Age<12 && !allOrRemember)
+                      return 0.5;
                   },
 
                   fill:function(d){
@@ -1071,7 +1274,7 @@ overviewBarChartGroup1.selectAll("rect")
                       .ease("cubic-in-out")
                       .attr({
                       x:function(d,i){
-                         return i * (barChart1Width/chart1AgeDiv.length);
+                         return i * (barChart1Width/chart1AgeDiv.length)+barMargin.left+barMargin.right+21;
                       },
 
                       y:function(d){
@@ -1088,7 +1291,8 @@ overviewBarChartGroup1.selectAll("rect")
                           return "#56baec";
                       }
                     });
-        
+
+                     
 barChartTitle1.text(selectedCountryList[0]);
               
 barChartGroup1.selectAll("rect")
@@ -1123,7 +1327,7 @@ barChartGroup2.selectAll("rect")
               .ease("cubic-in-out")
               .attr({
                    x:function(d,i){
-                    return i * (barChart1Width/chartDataset2.length)+barChart1Width;
+                    return i * (barChart1Width/chartDataset2.length)+barChart1Width+barMargin.left+barMargin.right+91;
                     },
 
                   y:function(d){
@@ -1135,9 +1339,13 @@ barChartGroup2.selectAll("rect")
                   height: function(d){
                     return heightScale2(d.Population);
                   },
+                  opacity:function(d){
+                    if(d.Age<12 && !allOrRemember)
+                      return 0.5;
+                  },
 
                   fill:function(d){
-                    return "#b0e57c";
+                      return "#b0e57c";
                   }
                   });
 
@@ -1151,7 +1359,7 @@ barChartGroup2.selectAll("rect")
                        .ease("cubic-in-out")
                        .attr({
                            x:function(d,i){
-                            return i * (barChart1Width/chart2AgeDiv.length)+barChart1Width;
+                            return i * (barChart1Width/chart2AgeDiv.length)+barChart1Width+barMargin.left+barMargin.right+91;
                         },
 
                         y:function(d){
@@ -1169,7 +1377,27 @@ barChartGroup2.selectAll("rect")
                         }
                       });
 
-       
+ svgBarContainer.select("#xAxis2")
+               .transition()
+               .duration(1000)
+               .call(xAxis2);
+              
+svgBarContainer.select("#yAxis2")
+               .transition()
+               .duration(1000)
+               .call(yAxis2);
+
+ svgBarContainer.select("#xAxisOverview2")
+               .transition()
+               .duration(1000)
+               .call(xAxisOverview2);
+              
+svgBarContainer.select("#yAxisOverview2")
+               .transition()
+               .duration(1000)
+               .call(yAxisOverview2);
+
+     
 barChartTitle2.text(selectedCountryList[1]);
               
 barChartGroup2.selectAll("rect")
@@ -1204,7 +1432,7 @@ barChartGroup3.selectAll("rect")
               .ease("cubic-in-out")
               .attr({
                 x:function(d,i){
-                    return i * (barChart1Width/chartDataset2.length) + barChart1Width*2;
+                    return i * (barChart1Width/chartDataset3.length) + barChart1Width*2 + 181;
                     },
 
                   y:function(d){
@@ -1216,9 +1444,14 @@ barChartGroup3.selectAll("rect")
                   height: function(d){
                     return heightScale3(d.Population);
                   },
+                  opacity:function(d){
+                    if(d.Age<12 && !allOrRemember)
+                      return 0.5;
+                  },
+
 
                   fill:function(d){
-                    return "#fe8402";
+                      return "#fe8402";
                   }
                   });
  
@@ -1232,7 +1465,7 @@ overviewBarChartGroup3.selectAll("rect")
                       .ease("cubic-in-out")
                       .attr({
                          x:function(d,i){
-                            return i * (barChart1Width/chart3AgeDiv.length) + barChart1Width*2;
+                            return i * (barChart1Width/chart3AgeDiv.length) + barChart1Width*2 +181;
                          },
 
                          y:function(d){
@@ -1250,7 +1483,28 @@ overviewBarChartGroup3.selectAll("rect")
                          } 
                         });
      
-     
+svgBarContainer.select("#xAxis3")
+               .transition()
+               .duration(1000)
+               .call(xAxis3);
+              
+svgBarContainer.select("#yAxis3")
+               .transition()
+               .duration(1000)
+               .call(yAxis3);
+
+svgBarContainer.select("#xAxisOverview3")
+               .transition()
+               .duration(1000)
+               .call(xAxisOverview3);
+              
+svgBarContainer.select("#yAxisOverview3")
+               .transition()
+               .duration(1000)
+               .call(yAxisOverview3);
+
+
+
        
 barChartTitle3.text(selectedCountryList[2]);
               
@@ -1271,6 +1525,5 @@ overviewBarChartGroup3.selectAll("rect")
 
 
 }
-
 
 

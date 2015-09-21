@@ -77,6 +77,10 @@ svg text{
 font-size:30px;
 }
 
+div#controlButtons{
+margin-top:10px;
+}
+
 .ui.large.buttons{
   padding-left:20px;
   margin-left:30px;
@@ -103,8 +107,8 @@ float:right;
 
 .axis path,.axis line
 {
-  fill:white;
-  stroke:#777;
+  fill:rgba(0,0,0,0);
+  stroke:white;
   shape-rendering:crispEdges;
 
 }
@@ -113,7 +117,7 @@ path.domain{
 height:10px;
 }
 .axis text{
-font-size:5px;
+font-size:6px;
 fill:white;
 }
 
@@ -152,6 +156,7 @@ nav a li{
 font-size:80px;
 }
 
+
   .default.dropdown:hover>.text,
 .ui.default.dropdown>.text, 
 .ui.dropdown:hover>.default.text, 
@@ -168,7 +173,9 @@ margin-left:2%;
 float:left;
 }
 
-
+.ui.selection.dropdown{
+font-size:50px;
+}
 
 .ui.multiple.dropdown>.label {
       display: inline-block;
@@ -195,5 +202,18 @@ float:left;
       padding: .71428571rem 1.14285714rem;
       font-size: 40px;
         }
+
+.ui.large.buttons{
+    margin-left:550px;
+}
+        
+.ui.large.buttons .button{
+      font-size:50px;
+}
+
+.ui.buttons .or:before{
+      font-size:50px;
+      margin-top:1px;
+}
     
   }
