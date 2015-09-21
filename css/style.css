@@ -77,6 +77,11 @@ svg text{
 font-size:30px;
 }
 
+.ui.large.buttons{
+  padding-left:20px;
+  margin-left:30px;
+}
+
 .ui.fluid.dropdown.stateDropdown{
 width:25%;
 margin-left:2%;

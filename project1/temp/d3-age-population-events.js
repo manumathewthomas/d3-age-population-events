@@ -13,15 +13,28 @@ var barChart1Width = barChartWidth/3;
 var barChart2Width = barChart1Width + barChartWidth/3;
 var barChart3Width = barChart2Width + barChartWidth/3;
 var xScale1,yScale1,heightScale1,xAxis1,yAxis1;
-var xScaleOverview1,yScaleOverview1,heightScaleOverview1;
 var xScale2,yScale2,heightScale2,xAxis2,yAxis2;
-var xScaleOverview2,yScaleOverview2,heightScaleOverview2;
 var xScale3,yScale3,heightScale3,xAxis3,yAxis3;
-var xScaleOverview3,yScaleOverview3,heightScaleOverview3;
-var chart1AgeDiv=[0,0,0,0,0,0,0,0,0];
-var chart2AgeDiv=[0,0,0,0,0,0,0,0,0];
-var chart3AgeDiv=[0,0,0,0,0,0,0,0,0];
-var noOfPeopleWhoRemembersChart1=0,noOfPeopleWhoRemembersChart2=0,noOfPeopleWhoRemembersChart3=0;
+var chartOverviewYMax;
+var chartAgeDiv=[
+                         {"AgeLessThan10":0,"AgeLessThan20":0,"AgeLessThan30":0,
+                            "AgeLessThan40":0,"AgeLessThan50":0,"AgeLessThan60":0,
+                            "AgeLessThan70":0,"AgeLessThan80":0,"AgeGreaterThan80":0,
+                             "noOfPeopleWhoRemembers":0
+                            }, 
+                            {"AgeLessThan10":0,"AgeLessThan20":0,"AgeLessThan30":0,
+                            "AgeLessThan40":0,"AgeLessThan50":0,"AgeLessThan60":0,
+                            "AgeLessThan70":0,"AgeLessThan80":0,"AgeGreaterThan80":0,
+                             "noOfPeopleWhoRemembers":0
+                            },
+                            {"AgeLessThan10":0,"AgeLessThan20":0,"AgeLessThan30":0,
+                            "AgeLessThan40":0,"AgeLessThan50":0,"AgeLessThan60":0,
+                            "AgeLessThan70":0,"AgeLessThan80":0,"AgeGreaterThan80":0,
+                             "noOfPeopleWhoRemembers":0
+                            }
+
+
+                ];
 var selectedCountryList=["California","Illinois","Utah"];
 var currentEvent;
 var regionalDataset;
@@ -130,22 +143,6 @@ var barChartGroup3 = svgBarContainer.append("g")
                                     .attr("id","barChartGroup3")
                                     .attr("transform","translate("+barMargin.left*3+",0)");
 
-                                    
-var overviewBarChartGroup1 = svgBarContainer.append("g")
-                                            .attr("id","overviewBarChartGroup1")
-                                            .attr("transform","translate("+barMargin.left+",0)");
-
-var overviewBarChartGroup2 = svgBarContainer.append("g")
-                                            .attr("id","overviewBarChartGroup2")
-                                            .attr("transform","translate("+barMargin.left*2+",0)");
-
-
-var overviewBarChartGroup3 = svgBarContainer.append("g")
-                                            .attr("id","overviewBarChartGroup3")
-                                            .attr("transform","translate("+barMargin.left*3+",0)");
-
-
-                                            
 var pieChartGroup1 = svgBarContainer.append("g")
                                     .attr("id","pieChartGroup1")
                                     .attr("transform","translate("+barChart1Width/2+","+barChartHeight/5+")");
@@ -160,40 +157,15 @@ var pieChartGroup3 = svgBarContainer.append("g")
 
 
 
- var barPieToggle = function(barVisibility,pieVisibility){ 
-   
-   if(!overviewOrDetail)
-   {
+ var barPieToogle = function(barVisibility,pieVisibility){ 
       d3.select("#barChartGroup1").attr("visibility",barVisibility);
       d3.select("#barChartGroup2").attr("visibility",barVisibility);
       d3.select("#barChartGroup3").attr("visibility",barVisibility);
-   }
-   else
-   {
-      d3.select("#overviewBarChartGroup1").attr("visibility",barVisibility);
-      d3.select("#overviewBarChartGroup2").attr("visibility",barVisibility);
-      d3.select("#overviewBarChartGroup3").attr("visibility",barVisibility);
-  
-   }
 
       d3.select("#pieChartGroup1").attr("visibility",pieVisibility);
       d3.select("#pieChartGroup2").attr("visibility",pieVisibility);
       d3.select("#pieChartGroup3").attr("visibility",pieVisibility);
  }
-
-var overviewDetailToggle = function(detailVisibility,overviewVisibility){
-
-  if(barOrPie)
-  {
-      d3.select("#barChartGroup1").attr("visibility",detailVisibility);
-      d3.select("#barChartGroup2").attr("visibility",detailVisibility);
-      d3.select("#barChartGroup3").attr("visibility",detailVisibility);
-        
-      d3.select("#overviewBarChartGroup1").attr("visibility",overviewVisibility);
-      d3.select("#overviewBarChartGroup2").attr("visibility",overviewVisibility);
-      d3.select("#overviewBarChartGroup3").attr("visibility",overviewVisibility);
-  }    
-}
 
 
 
@@ -423,7 +395,7 @@ fullList = stateList.concat(countryList).sort();
           
            barOrPie = true;
           
-           barPieToggle("visible","hidden");
+           barPieToogle("visible","hidden");
   });
 
   $('#pieButton').on("click",function(){
@@ -432,7 +404,7 @@ fullList = stateList.concat(countryList).sort();
           
            barOrPie = false;
 
-           barPieToggle("hidden","visible");
+           barPieToogle("hidden","visible");
   });
 
 
@@ -441,7 +413,9 @@ fullList = stateList.concat(countryList).sort();
           d3.select("#detailButton").attr("class","ui button");
           
           overviewOrDetail = true;
-          overviewDetailToggle("hidden","visible");
+          chartDataset1 =[];
+          chartDataset1 = chartAgeDiv[0];
+      updateBarChart1();
   });
 
   $('#detailButton').on("click",function(){
@@ -449,11 +423,27 @@ fullList = stateList.concat(countryList).sort();
           d3.select("#overviewButton").attr("class","ui button");
 
           overviewOrDetail = false;
-          overviewDetailToggle("visible","hidden");
   });
 
+//insertDataToBarChart1();
 drawBarCharts();
+
+   /*  dropdown_menu.append("div")
+            .attr("class","item")
+            .attr("data-value","ca")
+            .append("i")
+            .attr("class","ca flag")
+            .select(function(){
+              return this.parentNode;
+            }).insert("span","div")
+            .text("Canada");
+            */
+  
+     
  
+  
+ 
+   
 }
 
 
@@ -465,55 +455,29 @@ var drawBarCharts = function(){
 
 scaleBarChart1();
 
-  barChartGroup1.selectAll("rect")
-                .data(chartDataset1)
-                .enter()
-                .append("rect")
-                .attr({
-                    x:function(d,i){
-                      return i * (barChart1Width/chartDataset1.length);
-                      },
-
-                    y:function(d){
-                       return barChartHeight/3-heightScale1(d.Population);
-                   },
-
-                    width:barChart1Width/chartDataset1.length -1,
-                  
-                    height: function(d){
-                      return heightScale1(d.Population);
+barChartGroup1.selectAll("rect")
+              .data(chartDataset1)
+              .enter()
+              .append("rect")
+              .attr({
+                  x:function(d,i){
+                    return i * (barChart1Width/chartDataset1.length);
                     },
 
-                   fill:function(d){
-                      return "#56baec";
-                    }
-                   });
-  
-  overviewBarChartGroup1.selectAll("rect")
-                        .data(chart1AgeDiv)
-                        .enter()
-                        .append("rect")
-                        .attr({
-                          x:function(d,i){
-                           return i * (barChart1Width/chart1AgeDiv.length);
-                        },
+                  y:function(d){
+                     return barChartHeight/3-heightScale1(d.Population);
+                  },
 
-                         y:function(d){
-                          return barChartHeight/3-heightScaleOverview1(d);
-                        },
-
-                         width:barChart1Width/chart1AgeDiv.length -1,
+                  width:barChart1Width/chartDataset1.length -1,
                   
-                         height: function(d){
-                           return heightScaleOverview1(d);
-                       },
+                  height: function(d){
+                    return heightScale1(d.Population);
+                  },
 
-                         fill:function(d){
-                          return "#56baec";
-                       }
-                    });
-
-
+                  fill:function(d){
+                    return "#56baec";
+                  }
+                  });
 
 /*
 svgBarContainer.append("g")
@@ -547,31 +511,6 @@ barChartGroup2.selectAll("rect")
                   }
                   });
 
-overviewBarChartGroup2.selectAll("rect")
-                      .data(chart2AgeDiv)
-                      .enter()
-                      .append("rect")
-                      .attr({
-                        x:function(d,i){
-                          return i * (barChart1Width/chart2AgeDiv.length)+barChart1Width;
-                      },
-
-                        y:function(d){
-                           return barChartHeight/3-heightScaleOverview2(d);
-                      },
-
-                        width:barChart1Width/chart2AgeDiv.length -1,
-                  
-                        height: function(d){
-                          return heightScaleOverview2(d);
-                      },
-
-                        fill:function(d){
-                          return "#b0e57c";
-                      }
-                    });
-
-
 
 /*
 svgBarContainer.append("g")
@@ -591,45 +530,25 @@ barChartGroup3.selectAll("rect")
                     },
 
                   y:function(d){
+                    if(!overviewOrDetail)
                      return barChartHeight/3-heightScale3(d.Population);
+                    else
+                      return barChartHeight/3-heightScale3(chartOverviewYMax);
                   },
 
                   width:barChart1Width/chartDataset3.length -1,
                   
                   height: function(d){
+                    if(!overviewOrDetail)
                       return heightScale3(d.Population);
+                    else
+                      return heightScale3(chartOverviewYMax);
                   },
 
                   fill:function(d){
                     return "#fe8402";
                   }
                   });
-
-overviewBarChartGroup3.selectAll("rect")
-                      .data(chart3AgeDiv)
-                      .enter()
-                      .append("rect")
-                      .attr({
-                        x:function(d,i){
-                          return i * (barChart1Width/chart3AgeDiv.length) + barChart1Width*2;
-                      },
-
-                        y:function(d){
-                              return barChartHeight/3-heightScaleOverview3(d);
-                      },
-
-                         width:barChart1Width/chart3AgeDiv.length -1,
-                  
-                         height: function(d){
-                              return heightScaleOverview3(d);
-                  
-                      },
-
-                        fill:function(d){
-                              return "#fe8402";
-                      }
-                     });
-
 
 
           pie = d3.layout.pie()
@@ -711,49 +630,47 @@ overviewBarChartGroup3.selectAll("rect")
                 return chartDataset3[i].Age;
              });
              
-             barPieToggle("visible","hidden");
-             overviewDetailToggle("hidden","visible");
+             barPieToogle("visible","hidden");
 
 }
 
 
 var scaleBarChart1 = function(){
-  xScale1 = d3.scale.linear()
-                   .domain([0,
-                        d3.max(chartDataset1,function(d){
-                           if(d.Age!=999)
-                            return d.Age;
-                     })])
-                    .range([0,barChartWidth/3]);
-
-  yScale1 = d3.scale.linear()
-                   .domain([0,d3.max(chartDataset1,function(d){
-                          return d.Population;
+xScale1 = d3.scale.linear()
+                 .domain([0,
+                      d3.max(chartDataset1,function(d){
+                        if(!overviewOrDetail)
+                        {  
+                         if(d.Age!=999)
+                          return d.Age;
+                       }
+                        else
+                          return 10;
+                    
                    })])
-                  .range([barChartHeight/3,0]);
+                  .range([0,barChartWidth/3]);
+yScale1 = d3.scale.linear()
+                 .domain([0,d3.max(chartDataset1,function(d){
+                      if(!overviewOrDetail)
+                        return d.Population;
+                     else
+                     {
+                       return [chartOverviewYMax];                  
+                     }
+                 })])
+                .range([barChartHeight/3,0]);
 
-  heightScale1 = d3.scale.linear()
-                        .domain([0,d3.max(chartDataset1,function(d){
-                          return d.Population;
-                        })])
-                        .range([0,barChartHeight/3]);
+heightScale1 = d3.scale.linear()
+                      .domain([0,d3.max(chartDataset1,function(d){
+                        if(!overviewOrDetail)
+                        return d.Population;
+                     else
+                     {
+                       return [chartOverviewYMax];                  
+                     }
+                      })])
+                      .range([0,barChartHeight/3]);
 
-
-  xScaleOverview1 = d3.scale.linear()
-                   .domain([0,chart1AgeDiv.length])
-                    .range([0,barChartWidth/3]);
-
-  yScaleOverview1 = d3.scale.linear()
-                   .domain([0,d3.max(chart1AgeDiv,function(d){
-                          return d;
-                   })])
-                  .range([barChartHeight/3,0]);
-
-  heightScaleOverview1 = d3.scale.linear()
-                        .domain([0,d3.max(chart1AgeDiv,function(d){
-                          return d;
-                        })])
-                        .range([0,barChartHeight/3]);
 xAxis1 = d3.svg.axis()
               .scale(xScale1)
               .orient("bottom").ticks(10);
@@ -794,22 +711,6 @@ heightScale2 = d3.scale.linear()
                       })])
                      .range([0,barChartHeight/3]);
  
-xScaleOverview2 = d3.scale.linear()
-                          .domain([0,chart2AgeDiv.length])
-                    .range([0,barChartWidth/3]);
-
-yScaleOverview2 = d3.scale.linear()
-                   .domain([0,d3.max(chart2AgeDiv,function(d){
-                          return d;
-                   })])
-                  .range([barChartHeight/3,0]);
-
-heightScaleOverview2 = d3.scale.linear()
-                        .domain([0,d3.max(chart2AgeDiv,function(d){
-                          return d;
-                        })])
-                        .range([0,barChartHeight/3]);
-
 xAxis2 = d3.svg.axis()
               .scale(xScale2)
               .orient("bottom").ticks(10);
@@ -850,26 +751,6 @@ heightScale3 = d3.scale.linear()
                       })])
                       .range([0,barChartHeight/3]);
 
- 
-xScaleOverview3 = d3.scale.linear()
-                          .domain([0,chart3AgeDiv.length])
-                          .range([0,barChartWidth/3]);
-
-yScaleOverview3 = d3.scale.linear()
-                   .domain([0,d3.max(chart3AgeDiv,function(d){
-                          return d;
-                   })])
-                  .range([barChartHeight/3,0]);
-
-heightScaleOverview3 = d3.scale.linear()
-                        .domain([0,d3.max(chart3AgeDiv,function(d){
-                          return d;
-                        })])
-                        .range([0,barChartHeight/3]);
-
-
-
-
 xAxis3 = d3.svg.axis()
               .scale(xScale3)
               .orient("bottom").ticks(10);
@@ -892,19 +773,47 @@ svgBarContainer.append("g")
 }
 
 
+var calculateAgeAggregate = function(category,population,chart){
+   
+  switch(category)
+  {
+    case "AgeLessThan10":
+      chartAgeDiv[chart].AgeLessThan10+=(+population);
+      break;
+    case "AgeLessThan20":
+      chartAgeDiv[chart].AgeLessThan20+=(+population);
+      break;
+    case "AgeLessThan30":
+      chartAgeDiv[chart].AgeLessThan30+=(+population);
+      break;
+    case "AgeLessThan40":
+      chartAgeDiv[chart].AgeLessThan40+=(+population);
+      break;
+    case "AgeLessThan50":
+      chartAgeDiv[chart].AgeLessThan50+=(+population);
+      break;
+    case "AgeLessThan60":
+      chartAgeDiv[chart].AgeLessThan60+=(+population);
+      break;
+    case "AgeLessThan70":
+      chartAgeDiv[chart].AgeLessThan70+=(+population);
+      break;
+    case "AgeLessThan80":
+      chartAgeDiv[chart].AgeLessThan80+=(+population);
+      break;
+    case "AgeGreaterThan80":
+      chartAgeDiv[chart].AgeGreaterThan80+=(+population);
+      break;
+    case "noOfPeopleWhoRemembers":
+      chartAgeDiv[chart].noOfPeopleWhoRemembers+=(+population);
+      break;
+  }
 
+}
 
 
 var insertDataToBarCharts = function(year){
-
- if(selectedCountryList[0]) 
-    chart1AgeDiv=[0,0,0,0,0,0,0,0,0];
- if(selectedCountryList[1]) 
-    chart2AgeDiv=[0,0,0,0,0,0,0,0,0];
- if(selectedCountryList[2]) 
-    chart3AgeDiv=[0,0,0,0,0,0,0,0,0];
-  
- for(var item,i=0;item=regionalDataset[i++];){
+for(var item,i=0;item=regionalDataset[i++];){
     var name = item.NAME;
     var population;
     switch(year)
@@ -930,33 +839,33 @@ var insertDataToBarCharts = function(year){
     if(item.NAME == selectedCountryList[0])
     {
      if(item.SEX==0 && item.AGE <10)  
-       chart1AgeDiv[0]+=population;
+       calculateAgeAggregate("AgeLessThan10",population,0);
      
      if(item.SEX==0 && item.AGE>=10 && item.AGE<20)
-      chart1AgeDiv[1]+=population;
-
+       calculateAgeAggregate("AgeLessThan20",population,0);
+       
      if(item.SEX==0 && item.AGE>=20 && item.AGE<30)
-      chart1AgeDiv[2]+=population;
+       calculateAgeAggregate("AgeLessThan30",population,0);
 
     if(item.SEX==0 && item.AGE>=30 && item.AGE<40)
-      chart1AgeDiv[3]+=population;
+       calculateAgeAggregate("AgeLessThan40",population,0);
 
     if(item.SEX==0 && item.AGE>=40 && item.AGE<50)
-      chart1AgeDiv[4]+=population;
+       calculateAgeAggregate("AgeLessThan50",population,0);
 
     if(item.SEX==0 && item.AGE>=50 && item.AGE<60)
-      chart1AgeDiv[5]+=population;
+       calculateAgeAggregate("AgeLessThan60",population,0);
 
     if(item.SEX==0 && item.AGE>=60 && item.AGE<70)
-      chart1AgeDiv[6]+=population;
+       calculateAgeAggregate("AgeLessThan70",population,0);
 
     if(item.SEX==0 && item.AGE>=70 && item.AGE<80)
-      chart1AgeDiv[7]+=population;
+       calculateAgeAggregate("AgeLessThan80",population,0);
 
     if(item.SEX==0 && item.AGE>=80 && item.AGE<999)
-      chart1AgeDiv[8]+=population;
+       calculateAgeAggregate("AgeGreaterThan80",population,0);
     if(item.SEX==0 && item.AGE>=12 && item.AGE<999)
-      noOfPeopleWhoRemembersChart1+=population;      
+      calculateAgeAggregate("noOfPeopleWhoRemembers",population,0);
 
     if(item.SEX==0 && item.AGE<999)
         chartDataset1.push({"State":item.NAME,"Age":+item.AGE,"Sex":item.SEX,"Population":population});
@@ -966,29 +875,33 @@ var insertDataToBarCharts = function(year){
    if(item.NAME == selectedCountryList[1])
     {
      if(item.SEX==0 && item.AGE <10)  
-       chart2AgeDiv[0]+=population;
+       calculateAgeAggregate("AgeLessThan10",population,1);
+     
      if(item.SEX==0 && item.AGE>=10 && item.AGE<20)
-       chart2AgeDiv[1]+=population;
+       calculateAgeAggregate("AgeLessThan20",population,1);
+       
      if(item.SEX==0 && item.AGE>=20 && item.AGE<30)
-       chart2AgeDiv[2]+=population;
+       calculateAgeAggregate("AgeLessThan30",population,1);
+
     if(item.SEX==0 && item.AGE>=30 && item.AGE<40)
-       chart2AgeDiv[3]+=population;
+       calculateAgeAggregate("AgeLessThan40",population,1);
 
     if(item.SEX==0 && item.AGE>=40 && item.AGE<50)
-       chart2AgeDiv[4]+=population;
+       calculateAgeAggregate("AgeLessThan50",population,1);
 
-    if(item.SEX==0 && item.AGE>=50 && item.AGE<60)
-       chart2AgeDiv[5]+=population;
+    if(item.SEX==0 && item.AGE>=40 && item.AGE<60)
+       calculateAgeAggregate("AgeLessThan60",population,1);
 
     if(item.SEX==0 && item.AGE>=60 && item.AGE<70)
-       chart2AgeDiv[6]+=population;
+       calculateAgeAggregate("AgeLessThan70",population,1);
 
     if(item.SEX==0 && item.AGE>=70 && item.AGE<80)
-       chart2AgeDiv[7]+=population;
+       calculateAgeAggregate("AgeLessThan80",population,1);
+
     if(item.SEX==0 && item.AGE>=80 && item.AGE<999)
-       chart2AgeDiv[8]+=population;
+       calculateAgeAggregate("AgeGreaterThan80",population,1);
     if(item.SEX==0 && item.AGE>=12 && item.AGE<999)
-       noOfPeopleWhoRemembersChart2+=population;
+      calculateAgeAggregate("noOfPeopleWhoRemembers",population,1);
 
     if(item.SEX==0 && item.AGE<999)
         chartDataset2.push({"State":item.NAME,"Age":+item.AGE,"Sex":item.SEX,"Population":population});
@@ -998,25 +911,34 @@ var insertDataToBarCharts = function(year){
   if(item.NAME == selectedCountryList[2])
     {
      if(item.SEX==0 && item.AGE <10)  
-       chart3AgeDiv[0]+=population;
+       calculateAgeAggregate("AgeLessThan10",population,2);
+     
      if(item.SEX==0 && item.AGE>=10 && item.AGE<20)
-       chart3AgeDiv[1]+=population;
+       calculateAgeAggregate("AgeLessThan20",population,2);
+       
      if(item.SEX==0 && item.AGE>=20 && item.AGE<30)
-       chart3AgeDiv[2]+=population;
+       calculateAgeAggregate("AgeLessThan30",population,2);
+
     if(item.SEX==0 && item.AGE>=30 && item.AGE<40)
-       chart3AgeDiv[3]+=population;
+       calculateAgeAggregate("AgeLessThan40",population,2);
+
     if(item.SEX==0 && item.AGE>=40 && item.AGE<50)
-       chart3AgeDiv[4]+=population;
-    if(item.SEX==0 && item.AGE>=50 && item.AGE<60)
-       chart3AgeDiv[5]+=population;
+       calculateAgeAggregate("AgeLessThan50",population,2);
+
+    if(item.SEX==0 && item.AGE>=40 && item.AGE<60)
+       calculateAgeAggregate("AgeLessThan60",population,2);
+
     if(item.SEX==0 && item.AGE>=60 && item.AGE<70)
-       chart3AgeDiv[6]+=population;
+       calculateAgeAggregate("AgeLessThan70",population,2);
+
     if(item.SEX==0 && item.AGE>=70 && item.AGE<80)
-       chart3AgeDiv[7]+=population;
+       calculateAgeAggregate("AgeLessThan80",population,2);
+
     if(item.SEX==0 && item.AGE>=80 && item.AGE<999)
-       chart3AgeDiv[8]+=population;
+       calculateAgeAggregate("AgeGreaterThan80",population,2);
     if(item.SEX==0 && item.AGE>=12 && item.AGE<999)
-         noOfPeopleWhoRemembersChart3+=population;
+      calculateAgeAggregate("noOfPeopleWhoRemembers",population,2);
+
     if(item.SEX==0 && item.AGE<999)
         chartDataset3.push({"State":item.NAME,"Age":+item.AGE,"Sex":item.SEX,"Population":population});
 
@@ -1029,9 +951,11 @@ var insertDataToBarCharts = function(year){
 
 var updateBarChart1 = function(){
 
+chartOverviewYMax = Math.max(chartAgeDiv[0].AgeLessThan10,chartAgeDiv[0].AgeLessThan20,chartAgeDiv[0].AgeLessThan30,
+                                chartAgeDiv[0].AgeLessThan40,chartAgeDiv[0].AgeLessThan50,chartAgeDiv[0].AgeLessThan60,
+                                chartAgeDiv[0].AgeLessThan70,chartAgeDiv[0].AgeLessThan80,chartAgeDiv[0].AgeGreaterThan80);
   
 scaleBarChart1();
-
 barChartGroup1.selectAll("rect")
               .data(chartDataset1)
               .transition()
@@ -1058,36 +982,7 @@ barChartGroup1.selectAll("rect")
                   fill:function(d){
                     return "#56baec";
                   }
-                  });
- 
-
-overviewBarChartGroup1.selectAll("rect")
-                      .data(chart1AgeDiv)
-                      .transition()
-                      .delay(function(d,i){
-                       return i/chart1AgeDiv.length *1000;
-                       })
-                      .duration(1000)
-                      .ease("cubic-in-out")
-                      .attr({
-                      x:function(d,i){
-                         return i * (barChart1Width/chart1AgeDiv.length);
-                      },
-
-                      y:function(d){
-                        return barChartHeight/3-heightScaleOverview1(d);
-                      },
-
-                         width:barChart1Width/chart1AgeDiv.length -1,
-                  
-                         height: function(d){
-                        return heightScaleOverview1(d);
-                      },
-
-                        fill:function(d){
-                          return "#56baec";
-                      }
-                    });
+                  })
         
 barChartTitle1.text(selectedCountryList[0]);
               
@@ -1095,16 +990,22 @@ barChartGroup1.selectAll("rect")
               .data(chartDataset1)
               .exit()
               .transition();
-overviewBarChartGroup1.selectAll("rect")
-              .data(chart1AgeDiv)
-              .exit()
-              .transition();
-
 
   piePath1 = pieChartGroup1.datum(chartDataset1)
                            .selectAll("path")
                            .data(pie)
                            .attr("d",arc);
+
+  piePath2 = pieChartGroup2.datum(chartDataset2)
+                           .selectAll("path")
+                           .data(pie)
+                           .attr("d",arc);
+
+  piePath3 = pieChartGroup3.datum(chartDataset3)
+                           .selectAll("path")
+                           .data(pie)
+                           .attr("d",arc);
+
 
 
 }
@@ -1141,52 +1042,13 @@ barChartGroup2.selectAll("rect")
                   }
                   });
 
- overviewBarChartGroup2.selectAll("rect")
-                       .data(chart2AgeDiv)
-                       .transition()
-                       .delay(function(d,i){
-                         return i/chart2AgeDiv.length *1000;
-                       })
-                       .duration(1000)
-                       .ease("cubic-in-out")
-                       .attr({
-                           x:function(d,i){
-                            return i * (barChart1Width/chart2AgeDiv.length)+barChart1Width;
-                        },
-
-                        y:function(d){
-                            return barChartHeight/3-heightScaleOverview2(d);
-                        },
-
-                        width:barChart1Width/chart2AgeDiv.length -1,
-                  
-                        height: function(d){
-                            return heightScaleOverview2(d);
-                        },
-
-                        fill:function(d){
-                             return "#b0e57c";
-                        }
-                      });
-
-       
+        
 barChartTitle2.text(selectedCountryList[1]);
               
 barChartGroup2.selectAll("rect")
               .data(chartDataset2)
               .exit()
               .transition();
-
-overviewBarChartGroup2.selectAll("rect")
-              .data(chart2AgeDiv)
-              .exit()
-              .transition();
-
-
-piePath2 = pieChartGroup2.datum(chartDataset2)
-                           .selectAll("path")
-                           .data(pie)
-                           .attr("d",arc);
 
 
 }
@@ -1221,35 +1083,6 @@ barChartGroup3.selectAll("rect")
                     return "#fe8402";
                   }
                   });
- 
-overviewBarChartGroup3.selectAll("rect")
-                      .data(chart3AgeDiv)
-                      .transition()
-                      .delay(function(d,i){
-                        return i/chart3AgeDiv.length *1000;
-                       })
-                      .duration(1000)
-                      .ease("cubic-in-out")
-                      .attr({
-                         x:function(d,i){
-                            return i * (barChart1Width/chart3AgeDiv.length) + barChart1Width*2;
-                         },
-
-                         y:function(d){
-                            return barChartHeight/3-heightScaleOverview3(d);
-                         },
-
-                          width:barChart1Width/chart3AgeDiv.length -1,
-                  
-                          height: function(d){
-                            return heightScaleOverview3(d);
-                         },
-
-                          fill:function(d){
-                            return "#fe8402";
-                         } 
-                        });
-     
      
        
 barChartTitle3.text(selectedCountryList[2]);
@@ -1257,17 +1090,7 @@ barChartTitle3.text(selectedCountryList[2]);
 barChartGroup3.selectAll("rect")
               .data(chartDataset3)
               .exit()
-              .transition()
-overviewBarChartGroup3.selectAll("rect")
-              .data(chart3AgeDiv)
-              .exit()
-              .transition()
-
-
-    piePath3 = pieChartGroup3.datum(chartDataset3)
-                          .selectAll("path")
-                           .data(pie)
-                           .attr("d",arc);
+              .transition();
 
 
 }
