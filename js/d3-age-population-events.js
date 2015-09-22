@@ -22,8 +22,10 @@ var chart1AgeDiv=[0,0,0,0,0,0,0,0,0];
 var chart2AgeDiv=[0,0,0,0,0,0,0,0,0];
 var chart3AgeDiv=[0,0,0,0,0,0,0,0,0];
 var noOfPeopleWhoRemembersChart1=0,noOfPeopleWhoRemembersChart2=0,noOfPeopleWhoRemembersChart3=0;
-var selectedCountryList=["California","China","China"];
+var totalPopulationChart1=0,totalPopulationChart2=0,totalPopulationChart3=0;
+var selectedCountryList=["California","Illinois","Utah"];
 var currentEvent;
+var pieOverviewLegend=[],pieOverviewLegendHeight=0;
 var regionalDataset;
 var stateList=[];
 var countryList=["China","India","Norway","Canada"];
@@ -61,7 +63,27 @@ var nav = header.append("nav");
        .data(["Home","How it works","Source","About the data","Thoughts","Credits"])
        .enter()
        .append("a")
-       .attr("href","#")
+       .attr("href",function(d,i){
+            switch(i){
+              case 0:
+                return "#";
+              break;
+              case 1:
+                return "work.html";
+               break;
+               case 2:
+                 return "https://github.com/manumathewthomas/d3-age-population-events";
+               break;
+               case 3:
+                 return "data.html";
+                 break;
+                case 4:
+                  return "thoughts.html";
+                return;
+                case 5:
+                 return "credits.html";
+            }
+       })
        .append("li")
        .text(function(d){
          return d;
@@ -145,7 +167,7 @@ var overviewBarChartGroup3 = svgBarContainer.append("g")
                                             .attr("id","overviewBarChartGroup3")
                                             .attr("transform","translate("+barMargin.left*3+",0)");
 
-
+// Implementation of Pie-Charts
                                             
 var pieChartGroup1 = svgBarContainer.append("g")
                                     .attr("id","pieChartGroup1")
@@ -171,7 +193,7 @@ var overviewPieChartGroup3 = svgBarContainer.append("g")
                                     .attr("id","overviewPieChartGroup3")
                                     .attr("transform","translate("+(barChart1Width/2+barChart1Width*2+170)+","+barChartHeight/5+")");
 
-
+// Implementation of Control Buttons
 
  var barPieToggle = function(barVisibility,pieVisibility){ 
    
@@ -206,13 +228,19 @@ var overviewPieChartGroup3 = svgBarContainer.append("g")
 
       d3.select("#xAxisOverview3").attr("visibility",barVisibility);
       d3.select("#yAxisOverview3").attr("visibility",barVisibility);
-
+     
+      d3.select("#overviewPieChartGroup1").attr("visibility",pieVisibility);
+      d3.select("#overviewPieChartGroup2").attr("visibility",pieVisibility);
+      d3.select("#overviewPieChartGroup3").attr("visibility",pieVisibility);
+ 
    }
 
+      
       d3.select("#pieChartGroup1").attr("visibility",pieVisibility);
       d3.select("#pieChartGroup2").attr("visibility",pieVisibility);
       d3.select("#pieChartGroup3").attr("visibility",pieVisibility);
- }
+
+}
 
 var overviewDetailToggle = function(detailVisibility,overviewVisibility){
 
@@ -243,7 +271,20 @@ var overviewDetailToggle = function(detailVisibility,overviewVisibility){
 
       d3.select("#xAxisOverview3").attr("visibility",overviewVisibility);
       d3.select("#yAxisOverview3").attr("visibility",overviewVisibility);
-  }    
+  } 
+
+  else
+  {
+      d3.select("#pieChartGroup1").attr("visibility",detailVisibility);
+      d3.select("#pieChartGroup2").attr("visibility",detailVisibility);
+      d3.select("#pieChartGroup3").attr("visibility",detailVisibility);
+        
+      d3.select("#overviewPieChartGroup1").attr("visibility",overviewVisibility);
+      d3.select("#overviewPieChartGroup2").attr("visibility",overviewVisibility);
+      d3.select("#overviewPieChartGroup3").attr("visibility",overviewVisibility);
+ 
+
+  }
 }
 
 
@@ -328,8 +369,7 @@ var eventDropdown = d3.select("body")
                         return d;
                       });
 
-//buttons
-//
+// Defining Control Buttons
 
 var controlButtons= d3.select("body")
                       .append("div")
@@ -443,7 +483,7 @@ fullList = stateList.sort();
 
      currentEvent=2013;
     
-
+// Implementation of DropDown menus
     insertDataToBarCharts(currentEvent);
   $('.stateDropdown').on("change",function(){     
       selectedCountryList=d3.select("#country").property("value").split(",");
@@ -544,7 +584,7 @@ drawBarCharts();
 //call to event-data handling function
 getRegionalData();
 
-
+// Drawing the inital Charts
 var drawBarCharts = function(){
 
 scaleBarChart1();
@@ -624,12 +664,6 @@ svgBarContainer.append("g")
 
 
 
-/*
-svgBarContainer.append("g")
-                .attr("class","axis y_axis")
-                .attr("transform","translate(20,0)")
-              .call(yAxis);
-*/
 scaleBarChart2();
 
 barChartGroup2.selectAll("rect")
@@ -706,12 +740,6 @@ svgBarContainer.append("g")
                .call(yAxisOverview2);
 
 
-/*
-svgBarContainer.append("g")
-                .attr("class","axis y_axis")
-                .attr("transform","translate(20,0)")
-                .call(yAxis);
-*/
 scaleBarChart3();
 
 barChartGroup3.selectAll("rect")
@@ -817,35 +845,70 @@ svgBarContainer.append("g")
                     .attr("d",arc)
                     .each(function(d){return this._current=d.Population2012;});
 
-         pieArcs1.append("text")
-             .attr("transform",function(d){
-             
-             })
-            .attr("fill","white")
-             .attr("text-anchor","middle")
-             .text(function(d,i){
-                return chartDataset1[i].Age;
-             });
        
         pieArcsOverview1 = overviewPieChartGroup1.datum(chart1AgeDiv)
                                   .selectAll("path")
                                   .data(pieOverview)
                                   .enter();
 
-         piePathOverview1 = pieArcsOverview1.append("path")
+        pieOverviewLegend=[],pieOverviewLegendHeight=-75;
+        
+        piePathOverview1 = pieArcsOverview1.append("path")
                     .attr("fill",function(d,i){
+                      pieOverviewLegend[i]=pieColor(i);
                       return pieColor(i);})
                     .attr("d",arc);
 
-         pieArcsOverview1.append("text")
-             .attr("transform",function(d){
-             
-             })
-            .attr("fill","white")
-             .attr("text-anchor","middle")
-             .text(function(d,i){
-                return chart1AgeDiv[i].Age;
-             });
+
+         pieOverviewLegend.forEach(function(d,i){
+                overviewPieChartGroup2.append("text")
+                                      .attr("x",-barChartWidth/3 +20)
+                                      .attr("y",pieOverviewLegendHeight+=15)
+                                      .attr("fill",d)
+                                      .attr("id",function(d){return "overviewPieChart1Percentage"+i;})
+                                      .text(function(d){
+                                        switch(i){
+                                            case 0:
+                                              return "< 10  ( "+((chart1AgeDiv[0]/totalPopulationChart1*100).toFixed(2))+"%)";
+                                              break;
+
+                                             case 1:
+                                              return "10-20  ( "+((chart1AgeDiv[1]/totalPopulationChart1*100).toFixed(2))+"%)";
+                                              break;
+
+                                             case 2:
+                                              return "20-30  ( "+((chart1AgeDiv[2]/totalPopulationChart1*100).toFixed(2))+"%)";
+                                              break;
+
+                                             case 3:
+                                              return "30-40 ( "+((chart1AgeDiv[3]/totalPopulationChart1*100).toFixed(2))+"%)";
+                                              break;
+
+                                             case 4:
+                                              return "40-50  ( "+((chart1AgeDiv[4]/totalPopulationChart1*100).toFixed(2))+"%)";
+                                              break;
+
+                                             case 5:
+                                              return "50-60  ( "+((chart1AgeDiv[5]/totalPopulationChart1*100).toFixed(2))+"%)";
+                                              break;
+
+                                             case 6:
+                                              return "60-70  ( "+((chart1AgeDiv[6]/totalPopulationChart1*100).toFixed(2))+"%)";
+                                              break;
+
+                                            case 7:
+                                              return "70-80  ( "+((chart1AgeDiv[7]/totalPopulationChart1*100).toFixed(2))+"%)";
+                                              break;
+
+                                            case 8:
+                                              return ">80    ( "+((chart1AgeDiv[8]/totalPopulationChart1*100).toFixed(2))+"%)";
+
+                                              break;
+                                        } 
+                                      });
+                                });
+         
+     
        
 
          pieChartGroup2.append("g")
@@ -862,16 +925,75 @@ svgBarContainer.append("g")
                     .attr("d",arc)
                     .each(function(d){return this._current=d.Population2012;});
 
-         pieArcs2.append("text")
-             .attr("transform",function(d){
-                return "translate("+arc.centroid(d)+")";
-             })
-             .attr("text-anchor","middle")
-             .text(function(d,i){
-                return chartDataset2[i].Age;
-             });
  
-          pieChartGroup3.append("g")
+          
+
+       
+        pieArcsOverview2 = overviewPieChartGroup2.datum(chart2AgeDiv)
+                                  .selectAll("path")
+                                  .data(pieOverview)
+                                  .enter();
+
+         pieOverviewLegend=[],pieOverviewLegendHeight=-75;
+         piePathOverview2 = pieArcsOverview2.append("path")
+                    .attr("fill",function(d,i){
+                      pieOverviewLegend[i] = pieColor(i);
+                      return pieColor(i);})
+                    .attr("d",arc);
+
+        pieOverviewLegend.forEach(function(d,i){
+                overviewPieChartGroup2.append("text")
+                                      .attr("x",barChart1Width/3)
+                                      .attr("y",pieOverviewLegendHeight+=15)
+                                      .attr("fill",d)
+                                      .attr("id",function(d){return "overviewPieChart2Percentage"+i;})
+                                      .text(function(d){
+                                        switch(i){
+                                            case 0:
+                                              return "< 10  ( "+((chart2AgeDiv[0]/totalPopulationChart2*100).toFixed(2))+"%)";
+                                              break;
+
+                                             case 1:
+                                              return "10-20  ( "+((chart2AgeDiv[1]/totalPopulationChart2*100).toFixed(2))+"%)";
+                                              break;
+
+                                             case 2:
+                                              return "20-30  ( "+((chart2AgeDiv[2]/totalPopulationChart2*100).toFixed(2))+"%)";
+                                              break;
+
+                                             case 3:
+                                              return "30-40 ( "+((chart2AgeDiv[3]/totalPopulationChart2*100).toFixed(2))+"%)";
+                                              break;
+
+                                             case 4:
+                                              return "40-50  ( "+((chart2AgeDiv[4]/totalPopulationChart2*100).toFixed(2))+"%)";
+                                              break;
+
+                                             case 5:
+                                              return "50-60  ( "+((chart2AgeDiv[5]/totalPopulationChart2*100).toFixed(2))+"%)";
+                                              break;
+
+                                             case 6:
+                                              return "60-70  ( "+((chart2AgeDiv[6]/totalPopulationChart2*100).toFixed(2))+"%)";
+                                              break;
+
+                                            case 7:
+                                              return "70-80  ( "+((chart2AgeDiv[7]/totalPopulationChart2*100).toFixed(2))+"%)";
+                                              break;
+
+                                            case 8:
+                                              return ">80    ( "+((chart2AgeDiv[8]/totalPopulationChart2*100).toFixed(2))+"%)";
+
+                                              break;
+                                        } 
+                                     });
+                                      });
+     
+         
+
+             
+             
+        pieChartGroup3.append("g")
                          .attr("transform","translate("+(barChartWidth/2+barChart1Width)+","+barChartWidth/2+")");
 
 
@@ -885,21 +1007,78 @@ svgBarContainer.append("g")
                     .attr("d",arc)
                     .each(function(d){return this._current=d.Population2012;});
 
-         pieArcs3.append("text")
-             .attr("transform",function(d){
-                return "translate("+arc.centroid(d)+")";
-             })
-             .attr("text-anchor","middle")
-             .text(function(d,i){
-                return chartDataset3[i].Age;
-             });
              
              barPieToggle("visible","hidden");
              overviewDetailToggle("hidden","visible");
+ 
+        pieArcsOverview3 = overviewPieChartGroup3.datum(chart3AgeDiv)
+                                  .selectAll("path")
+                                  .data(pieOverview)
+                                  .enter();
+
+         pieOverviewLegend=[],pieOverviewLegendHeight=-75;
+         
+         piePathOverview3 = pieArcsOverview3.append("path")
+                    .attr("fill",function(d,i){
+                      pieOverviewLegend[i] = pieColor(i);
+                      return pieColor(i);})
+                    .attr("d",arc);
+
+         pieOverviewLegend.forEach(function(d,i){
+                overviewPieChartGroup3.append("text")
+                                      .attr("x",barChart1Width/3)
+                                      .attr("y",pieOverviewLegendHeight+=15)
+                                      .attr("fill",d)
+                                      .attr("id",function(d){return "overviewPieChart3Percentage"+i;})
+                                      .text(function(d){
+                                        switch(i){
+                                            case 0:
+                                              return "< 10  ( "+((chart3AgeDiv[0]/totalPopulationChart3*100).toFixed(2))+"%)";
+                                              break;
+
+                                             case 1:
+                                              return "10-20  ( "+((chart3AgeDiv[1]/totalPopulationChart3*100).toFixed(2))+"%)";
+                                              break;
+
+                                             case 2:
+                                              return "20-30  ( "+((chart3AgeDiv[2]/totalPopulationChart3*100).toFixed(2))+"%)";
+                                              break;
+
+                                             case 3:
+                                              return "30-40 ( "+((chart3AgeDiv[3]/totalPopulationChart3*100).toFixed(2))+"%)";
+                                              break;
+
+                                             case 4:
+                                              return "40-50  ( "+((chart3AgeDiv[4]/totalPopulationChart3*100).toFixed(2))+"%)";
+                                              break;
+
+                                             case 5:
+                                              return "50-60  ( "+((chart3AgeDiv[5]/totalPopulationChart3*100).toFixed(2))+"%)";
+                                              break;
+
+                                             case 6:
+                                              return "60-70  ( "+((chart3AgeDiv[6]/totalPopulationChart3*100).toFixed(2))+"%)";
+                                              break;
+
+                                            case 7:
+                                              return "70-80  ( "+((chart3AgeDiv[7]/totalPopulationChart3*100).toFixed(2))+"%)";
+                                              break;
+
+                                            case 8:
+                                              return ">80    ( "+((chart3AgeDiv[8]/totalPopulationChart3*100).toFixed(2))+"%)";
+
+                                              break;
+                                        } 
+                                     });
+                                      });
+     
+         
+
+ 
 
 }
 
-
+// Implementation of Scale
 var scaleBarChart1 = function(){
   xScale1 = d3.scale.linear()
                    .domain([0,
@@ -922,9 +1101,9 @@ var scaleBarChart1 = function(){
                         .range([0,barChartHeight/3]);
 
 
-  xScaleOverview1 = d3.scale.linear()
-                   .domain([0,chart1AgeDiv.length])
-                    .range([0,barChartWidth/3]);
+  xScaleOverview1 = d3.scale.ordinal()
+                   .domain(["<10","10-20","20-30","30-40","40-50","50-60","60-70","70-80",">80"])
+                    .range([0,40,70,100,130,160,190,220,250]);
 
   yScaleOverview1 = d3.scale.linear()
                    .domain([0,d3.max(chart1AgeDiv,function(d){
@@ -975,9 +1154,9 @@ heightScale2 = d3.scale.linear()
                       })])
                      .range([0,barChartHeight/3]);
  
-xScaleOverview2 = d3.scale.linear()
-                          .domain([0,chart2AgeDiv.length])
-                    .range([0,barChartWidth/3]);
+xScaleOverview2 = d3.scale.ordinal()
+                    .domain(["<10","10-20","20-30","30-40","40-50","50-60","60-70","70-80",">80"])
+                    .range([0,40,70,100,130,160,190,220,250]);
 
 yScaleOverview2 = d3.scale.linear()
                    .domain([0,d3.max(chart2AgeDiv,function(d){
@@ -1031,9 +1210,10 @@ heightScale3 = d3.scale.linear()
                       .range([0,barChartHeight/3]);
 
  
-xScaleOverview3 = d3.scale.linear()
-                          .domain([0,chart3AgeDiv.length])
-                          .range([0,barChartWidth/3]);
+xScaleOverview3 = d3.scale.ordinal()
+                     .domain(["<10","10-20","20-30","30-40","40-50","50-60","60-70","70-80",">80"])
+                    .range([0,40,70,100,130,160,190,220,250]);
+
 
 yScaleOverview3 = d3.scale.linear()
                    .domain([0,d3.max(chart3AgeDiv,function(d){
@@ -1069,7 +1249,7 @@ yAxisOverview3 = d3.svg.axis()
 
 
 
-
+//Populating Data
 var insertDataToBarCharts = function(year){
 
  if(selectedCountryList[0]) 
@@ -1078,7 +1258,8 @@ var insertDataToBarCharts = function(year){
     chart2AgeDiv=[0,0,0,0,0,0,0,0,0];
  if(selectedCountryList[2]) 
     chart3AgeDiv=[0,0,0,0,0,0,0,0,0];
-  
+ 
+ totalPopulationChart1=0,totalPopulationChart2=0,totalPopulationChart3=0;
  for(var item,i=0;item=regionalDataset[i++];){
     var name = item.NAME;
     var population;
@@ -1130,6 +1311,8 @@ var insertDataToBarCharts = function(year){
 
     if(item.SEX==0 && item.AGE>=80 && item.AGE<999)
       chart1AgeDiv[8]+=population;
+    if(item.SEX==0 && item.AGE<999)
+      totalPopulationChart1+=population;
     if(item.SEX==0 && item.AGE>=12 && item.AGE<999)
       noOfPeopleWhoRemembersChart1+=population;      
 
@@ -1162,6 +1345,8 @@ var insertDataToBarCharts = function(year){
        chart2AgeDiv[7]+=population;
     if(item.SEX==0 && item.AGE>=80 && item.AGE<999)
        chart2AgeDiv[8]+=population;
+    if(item.SEX==0 && item.AGE<999)
+      totalPopulationChart2+=population;
     if(item.SEX==0 && item.AGE>=12 && item.AGE<999)
        noOfPeopleWhoRemembersChart2+=population;
 
@@ -1190,6 +1375,8 @@ var insertDataToBarCharts = function(year){
        chart3AgeDiv[7]+=population;
     if(item.SEX==0 && item.AGE>=80 && item.AGE<999)
        chart3AgeDiv[8]+=population;
+    if(item.SEX==0 && item.AGE<999)
+      totalPopulationChart3+=population;
     if(item.SEX==0 && item.AGE>=12 && item.AGE<999)
          noOfPeopleWhoRemembersChart3+=population;
     if(item.SEX==0 && item.AGE<999)
@@ -1201,7 +1388,7 @@ var insertDataToBarCharts = function(year){
 }
 
 
-
+// Updating the charts
 var updateBarChart1 = function(){
 
   
@@ -1310,6 +1497,29 @@ overviewBarChartGroup1.selectAll("rect")
                            .data(pie)
                            .attr("d",arc);
 
+piePathOverview1 = overviewPieChartGroup1.datum(chart1AgeDiv)
+                           .selectAll("path")
+                           .data(pieOverview)
+                           .attr("d",arc);
+if(totalPopulationChart1!=0)
+{
+d3.select("#overviewPieChart1Percentage0").text("<10 ( " +((chart1AgeDiv[0]/totalPopulationChart1*100).toFixed(2))+"%)");
+d3.select("#overviewPieChart1Percentage1").text("10-20 ( " +((chart1AgeDiv[1]/totalPopulationChart1*100).toFixed(2))+"%)");
+d3.select("#overviewPieChart1Percentage2").text("20-30 ( " +((chart1AgeDiv[2]/totalPopulationChart1*100).toFixed(2))+"%)");
+d3.select("#overviewPieChart1Percentage3").text("30-40 ( " +((chart1AgeDiv[3]/totalPopulationChart1*100).toFixed(2))+"%)");
+d3.select("#overviewPieChart1Percentage4").text("40-50 ( " +((chart1AgeDiv[4]/totalPopulationChart1*100).toFixed(2))+"%)");
+d3.select("#overviewPieChart1Percentage5").text("50-60 ( " +((chart1AgeDiv[5]/totalPopulationChart1*100).toFixed(2))+"%)");
+d3.select("#overviewPieChart1Percentage6").text("60-70 ( " +((chart1AgeDiv[6]/totalPopulationChart1*100).toFixed(2))+"%)");
+d3.select("#overviewPieChart1Percentage7").text("70-80 ( " +((chart1AgeDiv[7]/totalPopulationChart1*100).toFixed(2))+"%)");
+d3.select("#overviewPieChart1Percentage8").text(">80 ( " +((chart1AgeDiv[8]/totalPopulationChart1*100).toFixed(2))+"%)");
+}
+
+
+
+
+
+
+
 
 }
 
@@ -1415,6 +1625,24 @@ piePath2 = pieChartGroup2.datum(chartDataset2)
                            .selectAll("path")
                            .data(pie)
                            .attr("d",arc);
+piePathOverview2 = overviewPieChartGroup2.datum(chart2AgeDiv)
+                           .selectAll("path")
+                           .data(pieOverview)
+                           .attr("d",arc);
+
+if(totalPopulationChart2!=0)
+{
+d3.select("#overviewPieChart2Percentage0").text("<10 ( " +((chart2AgeDiv[0]/totalPopulationChart2*100).toFixed(2))+"%)");
+d3.select("#overviewPieChart2Percentage1").text("10-20 ( " +((chart2AgeDiv[1]/totalPopulationChart2*100).toFixed(2))+"%)");
+d3.select("#overviewPieChart2Percentage2").text("20-30 ( " +((chart2AgeDiv[2]/totalPopulationChart2*100).toFixed(2))+"%)");
+d3.select("#overviewPieChart2Percentage3").text("30-40 ( " +((chart2AgeDiv[3]/totalPopulationChart2*100).toFixed(2))+"%)");
+d3.select("#overviewPieChart2Percentage4").text("40-50 ( " +((chart2AgeDiv[4]/totalPopulationChart2*100).toFixed(2))+"%)");
+d3.select("#overviewPieChart2Percentage5").text("50-60 ( " +((chart2AgeDiv[5]/totalPopulationChart2*100).toFixed(2))+"%)");
+d3.select("#overviewPieChart2Percentage6").text("60-70 ( " +((chart2AgeDiv[6]/totalPopulationChart2*100).toFixed(2))+"%)");
+d3.select("#overviewPieChart2Percentage7").text("70-80 ( " +((chart2AgeDiv[7]/totalPopulationChart2*100).toFixed(2))+"%)");
+d3.select("#overviewPieChart2Percentage8").text(">80 ( " +((chart2AgeDiv[8]/totalPopulationChart2*100).toFixed(2))+"%)");
+}
+
 
 
 }
@@ -1522,6 +1750,24 @@ overviewBarChartGroup3.selectAll("rect")
                           .selectAll("path")
                            .data(pie)
                            .attr("d",arc);
+    overviewPiePath3 = overviewPieChartGroup3.datum(chart3AgeDiv)
+                          .selectAll("path")
+                           .data(pieOverview)
+                           .attr("d",arc);
+
+if(totalPopulationChart3!=0)
+{
+d3.select("#overviewPieChart3Percentage0").text("<10 ( " +((chart3AgeDiv[0]/totalPopulationChart3*100).toFixed(2))+"%)");
+d3.select("#overviewPieChart3Percentage1").text("10-20 ( " +((chart3AgeDiv[1]/totalPopulationChart3*100).toFixed(2))+"%)");
+d3.select("#overviewPieChart3Percentage2").text("20-30 ( " +((chart3AgeDiv[2]/totalPopulationChart3*100).toFixed(2))+"%)");
+d3.select("#overviewPieChart3Percentage3").text("30-40 ( " +((chart3AgeDiv[3]/totalPopulationChart3*100).toFixed(2))+"%)");
+d3.select("#overviewPieChart3Percentage4").text("40-50 ( " +((chart3AgeDiv[4]/totalPopulationChart3*100).toFixed(2))+"%)");
+d3.select("#overviewPieChart3Percentage5").text("50-60 ( " +((chart3AgeDiv[5]/totalPopulationChart3*100).toFixed(2))+"%)");
+d3.select("#overviewPieChart3Percentage6").text("60-70 ( " +((chart3AgeDiv[6]/totalPopulationChart3*100).toFixed(2))+"%)");
+d3.select("#overviewPieChart3Percentage7").text("70-80 ( " +((chart3AgeDiv[7]/totalPopulationChart3*100).toFixed(2))+"%)");
+d3.select("#overviewPieChart3Percentage8").text(">80 ( " +((chart3AgeDiv[8]/totalPopulationChart3*100).toFixed(2))+"%)");
+}
+
 
 
 }
