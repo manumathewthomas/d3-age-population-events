@@ -2,6 +2,6 @@
 
 
 * Download the .zip file
-* Run a local server (pythom -m SimpleHTTPServer)
+* Run a local server (python -m SimpleHTTPServer)
 * Navigate to the folder 
 * Run.
